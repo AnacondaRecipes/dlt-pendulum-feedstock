@@ -15,7 +15,7 @@ build:
 requirements:
   build:
     - python
-    # - {{ stdlib('c') }}
+    - {{ stdlib('c') }} 
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
