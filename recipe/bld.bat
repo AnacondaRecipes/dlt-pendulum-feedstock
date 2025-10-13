@@ -5,7 +5,7 @@ if errorlevel 1 exit 1
 
 REM Bundle licenses
 pushd %SRC_DIR%\rust
-    call cargo-bundle-licenses --format yaml --output %RECIPE_DIR%\THIRDPARTY.yml
+    call cargo-bundle-licenses --format yaml --output ../THIRDPARTY.yml
     if errorlevel 1 exit 1
 popd
 
