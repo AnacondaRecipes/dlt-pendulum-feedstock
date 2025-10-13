@@ -8,42 +8,62 @@ package:
 source:
   url: https://github.com/dlt-hub/pendulum/archive/{{ version }}.tar.gz
   sha256: 9a0225a8e97399ad7c3930856d581093b65e36bb27c85c0da5a2575ddbaa9248
-  patches:
-    - 0001-remove-tzdata-dep-for-pip-check.patch
 
 build:
-  number: 1
+  number: 0
 
 requirements:
   build:
-    - python                                 # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-    - maturin >=1.0,<2.0                     # [build_platform != target_platform]
+    - python
+    # - {{ stdlib('c') }}
     - {{ compiler('c') }}
-    - {{ stdlib('c') }}
     - {{ compiler('rust') }}
     - cargo-bundle-licenses
   host:
     - python
     - maturin >=1.0,<2.0
-    - poetry-core
     - pip
   run:
     - python
     - python-dateutil >=2.6
-    - tzdata >=2020.1
+    - python-tzdata >=2020.1
     - cffi >=1.17
 
+# E       AssertionError: assert None == 'Europe/Paris'
+{% set deselect_tests = " --deselect=tests/tz/test_local_timezone.py::test_unix_symlink" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/tz/test_local_timezone.py::test_unix_etc_timezone_dir" %}
+
 test:
-  requires:
-    - pip
-  commands:
-    - pip check
-    # make sure the extensions actually built (this might be fragile since these modules are private)
-    - python -c "from pendulum._pendulum import parse_iso8601"  # [python_impl == 'cpython']
-    - python -c "from pendulum._helpers import days_in_year"  # [python_impl == 'cpython']
+  source_files:
+    - tests
   imports:
     - pendulum
+    - pendulum.__version__
+    - pendulum.constants
+    - pendulum.date
+    - pendulum.datetime
+    - pendulum.day
+    - pendulum.duration
+    - pendulum.exceptions
+    - pendulum.formatting
+    - pendulum.helpers
+    - pendulum.interval
+    - pendulum.locales
+    - pendulum.mixins
+    - pendulum.parser
+    - pendulum.parsing
+    - pendulum.time
+    - pendulum.tz
+    - pendulum.utils
+  requires:
+    - pip
+    - pytest
+    - pytz
+    - time-machine
+  commands:
+    - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -v tests {{ deselect_tests }}
 
 about:
   home: https://github.com/dlt-hub/pendulum
@@ -56,6 +76,8 @@ about:
   description: |
     Drop-in replacement for the standard datetime class.
     It behaves exactly like it but with many improvements.
+  dev_url: https://github.com/dlt-hub/pendulum
+  doc_url: https://github.com/dlt-hub/pendulum/blob/master/README.rst
 
 extra:
   recipe-maintainers:

@@ -11,4 +11,4 @@ pushd "${SRC_DIR}"/rust
   cargo-bundle-licenses --format yaml --output "${RECIPE_DIR}"/THIRDPARTY.yml
 popd
 
-"${PYTHON}" -m pip install $SRC_DIR/rust/target/wheels/dlt_pendulum*.whl --no-deps -vv
+$PYTHON -m pip install $SRC_DIR/rust/target/wheels/dlt_pendulum*.whl -vv --no-deps --no-build-isolation --ignore-installed
